@@ -33,3 +33,6 @@ class Course(object):
     def getType(self):
         return self.m_type
 
+    def __lt__(self, other):
+        return self.m_beginHour <= other.getBeginHour()
+

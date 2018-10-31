@@ -12,6 +12,7 @@ class Module(object):
         self.m_courses = []
         self.m_CMHour = 0
         self.m_TDHour = 0
+        self.m_TEAHour = 0
         self.m_TPHour = 0
 
     def addCourse(self, course):
@@ -24,6 +25,9 @@ class Module(object):
             else:
                 if course.getType() == "TP":
                     self.m_TPHour += course.getDuration()
+                else:
+                    if course.getType() == "TEA":
+                        self.m_TEAHour += course.getDuration();
 
     def getCMHour(self):
         return self.m_CMHour
@@ -36,6 +40,9 @@ class Module(object):
 
     def getTDHour(self):
         return self.m_TDHour
+
+    def getTEAHour(self):
+        return self.m_TEAHour;
 
     def getTPHour(self):
         return self.m_TPHour
