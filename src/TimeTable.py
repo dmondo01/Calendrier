@@ -155,8 +155,8 @@ class TimeTable(object):
         worksheet.write(0, 12, "TD", cell_format)
         worksheet.write(0, 13, "TP", cell_format)
         worksheet.write(0, 14, "TEA", cell_format)
-        worksheet.write(0, 15, "Total", cell_format)
-        worksheet.write(0, 16, "HETD", cell_format)
+        worksheet.write(0, 15, "Total sans TEA", cell_format)
+        worksheet.write(0, 16, "HETD sans TEA", cell_format)
 
         totalDuration = 0
         totalDurationHETD = 0
@@ -204,21 +204,24 @@ class TimeTable(object):
                             totalDurationHETD += course.getDuration()
                         else:
                             if course.getType() == "TP":
-                                worksheet.write_number(row, col + 7, course.getDuration() * 2 / 3)
-                                totalDurationHETD += course.getDuration() * 2 / 3
-                            else:
-                                if course.getType() == "TEA":
-                                    worksheet.write_number(row, col + 7, course.getDuration() * 0.015 * 15)
-                                    totalDurationHETD += course.getDuration() * 0.015
+                                #worksheet.write_number(row, col + 7, course.getDuration() * 2 / 3)
+                                worksheet.write_number(row, col + 7, course.getDuration())
+                                #totalDurationHETD += course.getDuration() * 2 / 3
+                                totalDurationHETD += course.getDuration()
+                            #else:
+                                #if course.getType() == "TEA":
+                                    #worksheet.write_number(row, col + 7, course.getDuration() * 0.015 * 15)
+                                    #totalDurationHETD += course.getDuration() * 0.015
                     row += 1
-                    totalDuration += course.getDuration()
+                    if course.getType() != "TEA":
+                        totalDuration += course.getDuration()
 
             if nbCoursesByDay > 1:
                 worksheet.merge_range(row - nbCoursesByDay, col, row - 1, col, lastWeek, merge_format)
             else:
                 worksheet.write_number(row-1, col, lastWeek)
 
-        worksheet.write(row+1, 6, "Total")
+        worksheet.write(row+1, 6, "Total sans TEA")
         worksheet.write_number(row+1, 7, totalDuration)
         worksheet.write_number(row+1, 8, totalDurationHETD)
         worksheet.write(row+2, 7, "Reste")
@@ -236,8 +239,11 @@ class TimeTable(object):
             worksheet.write_number(row, 12, module.getTDHour())
             worksheet.write_number(row, 13, module.getTPHour())
             worksheet.write_number(row, 14, module.getTEAHour())
-            worksheet.write_number(row, 15, module.getCMHour()+module.getTDHour()+module.getTPHour()+module.getTEAHour())
-            worksheet.write_number(row, 16, module.getCMHour()*1.5+module.getTDHour()+module.getTPHour()*2/3+module.getTEAHour()*0.015*15)
+            #worksheet.write_number(row, 15, module.getCMHour()+module.getTDHour()+module.getTPHour()+module.getTEAHour())
+            #worksheet.write_number(row, 16, module.getCMHour()*1.5+module.getTDHour()+module.getTPHour()*2/3+module.getTEAHour()*0.015*15)
+            worksheet.write_number(row, 15, module.getCMHour() + module.getTDHour() + module.getTPHour())
+            #worksheet.write_number(row, 16, module.getCMHour() * 1.5 + module.getTDHour() + module.getTPHour() * 2 / 3)
+            worksheet.write_number(row, 16, module.getCMHour() * 1.5 + module.getTDHour() + module.getTPHour())
             row += 1
             CM += module.getCMHour()
             TD += module.getTDHour()
@@ -249,7 +255,10 @@ class TimeTable(object):
         worksheet.write_number(row+1, 12, TD, cell_format)
         worksheet.write_number(row+1, 13, TP, cell_format)
         worksheet.write_number(row+1, 14, TEA, cell_format)
-        worksheet.write_number(row+1, 15, CM+TD+TP+TEA, cell_format)
-        worksheet.write_number(row+1, 16, CM*1.5+TD+TP*2/3+TEA*0.015*15, cell_format)
+        #worksheet.write_number(row+1, 15, CM+TD+TP+TEA, cell_format)
+        #worksheet.write_number(row+1, 16, CM*1.5+TD+TP*2/3+TEA*0.015*15, cell_format)
+        worksheet.write_number(row + 1, 15, CM + TD + TP, cell_format)
+        #worksheet.write_number(row + 1, 16, CM * 1.5 + TD + TP * 2 / 3, cell_format)
+        worksheet.write_number(row + 1, 16, CM * 1.5 + TD + TP, cell_format)
 
         workbook.close()

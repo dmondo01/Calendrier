@@ -11,7 +11,7 @@ from datetime import datetime
 
 
 def main():
-    timeTable = TimeTable("dmondo01", datetime(2018, 9, 1), 176)
+    timeTable = TimeTable("dmondo01", datetime(2020, 9, 1), 192)
     timeTable.createTimeTable()
     timeTable.createExcelTimeTable()
 
