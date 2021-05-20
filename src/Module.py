@@ -7,8 +7,9 @@
 
 
 class Module(object):
-    def __init__(self, name):
+    def __init__(self, name, code):
         self.m_name = name
+        self.m_code = code
         self.m_courses = []
         self.m_CMHour = 0
         self.m_TDHour = 0
@@ -37,6 +38,9 @@ class Module(object):
 
     def getName(self):
         return self.m_name
+
+    def getCode(self):
+        return self.m_code
 
     def getTDHour(self):
         return self.m_TDHour

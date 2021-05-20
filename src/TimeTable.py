@@ -20,6 +20,7 @@ class TimeTable(object):
     :param beginYearDate: date de debut pour la prise en compte des heures (ex: 2018-09-01)
     :param nbHoursPerform: Nombre d'heures a effectuer pour un service complet
     """
+
     def __init__(self, login, beginYearDate, nbHoursPerform):
 
         self.m_beginYearDate = beginYearDate
@@ -31,6 +32,7 @@ class TimeTable(object):
     """
     Lecture de l'ICS et extraction des informations
     """
+
     def createTimeTable(self):
         gcal = Calendar(urlopen(self.m_ics).read().decode('iso-8859-1'))
 
@@ -53,6 +55,9 @@ class TimeTable(object):
                                 type = "TEA"
 
             if type != "":
+                splitedDescription = description.split()
+                code = splitedDescription[2]
+
                 index = description.find(":")
                 temp = description[index + 2:]
                 endIndex = temp.find(":")
@@ -60,10 +65,8 @@ class TimeTable(object):
                 temp = temp[:endIndex - 7].replace(u"Ã¨", "e").replace(u"Ã©", "e").replace(u"Ãª", "e")
                 parentheseIndex = temp.find("(")
 
-                date = str(component.begin)[:10].replace(" ","").split("-")
+                date = str(component.begin)[:10].replace(" ", "").split("-")
                 d = datetime(int(date[0]), int(date[1]), int(date[2]))
-
-
 
                 if d >= self.m_beginYearDate:
                     print "---------------------------------"
@@ -76,28 +79,35 @@ class TimeTable(object):
 
                     index = temp.find("-")
                     if index != -1:
-                        temp = temp[:index-1]
+                        temp = temp[:index - 1]
 
-                    print temp
-                    print description
-                    print d
+                    print code + " " + temp
                     print str(component.begin)[:10]
                     print str(component.begin)[11:19]
                     print component.duration
 
-                    if temp == "Recuperatio":
-                        temp = "Analyse de Donnees Mobile"
-
-                    module =  None
+                    module = None
                     for m in self.m_modules:
-                        if m.getName() == temp:
+                        if m.getCode() == code:
                             module = m
                     if module is None:
-                        module = Module(temp)
+                        module = Module(temp, code)
 
                     duration = 1.5
-                    if str(component.duration) == "3:00:00":
-                        duration = 3
+                    if str(component.duration) == "1:00:00":
+                        duration = 1
+                    else:
+                        if str(component.duration) == "2:00:00":
+                            duration = 2
+                        else:
+                            if str(component.duration) == "2:30:00":
+                                duration = 2.5
+                            else:
+                                if str(component.duration) == "3:00:00":
+                                    duration = 3
+                                else:
+                                    if str(component.duration) == "4:30:00":
+                                        duration = 4.5
 
                     m = None
                     try:
@@ -105,7 +115,8 @@ class TimeTable(object):
                     except:
                         m = []
 
-                    course = Course(module, type, str(d), str(component.begin)[11:19], str(component.end)[11:19], duration)
+                    course = Course(module, type, str(d), str(component.begin)[11:19], str(component.end)[11:19],
+                                    duration)
                     module.addCourse(course)
                     m.append(course)
                     self.m_courses[d] = m
@@ -115,6 +126,7 @@ class TimeTable(object):
     """
     Creation du fichier excel recapitulatif
     """
+
     def createExcelTimeTable(self):
         workbook = xlsxwriter.Workbook(".." + os.sep + "service.xlsx")
         worksheet = workbook.add_worksheet()
@@ -173,7 +185,7 @@ class TimeTable(object):
                 week = int(d.strftime("%V"))
                 if week != lastWeek:
                     if nbCoursesByDay > 1:
-                        worksheet.merge_range(row-nbCoursesByDay, col, row-1, col,lastWeek, merge_format)
+                        worksheet.merge_range(row - nbCoursesByDay, col, row - 1, col, lastWeek, merge_format)
                     else:
                         worksheet.write_number(row, col, lastWeek)
                     lastWeek = week
@@ -181,16 +193,16 @@ class TimeTable(object):
                 else:
                     nbCoursesByDay += len(self.m_courses[d])
 
-
-
                 date = str(d)[:10].split("-")
-                if(len(self.m_courses[d]) > 1):
-                    worksheet.merge_range(row, col+1, row+len(self.m_courses[d])-1, col+1,
-                                          date[2]+"/"+date[1]+"/"+date[0], merge_format)
+                if (len(self.m_courses[d]) > 1):
+                    worksheet.merge_range(row, col + 1, row + len(self.m_courses[d]) - 1, col + 1,
+                                          date[2] + "/" + date[1] + "/" + date[0], merge_format)
                 else:
-                    worksheet.write(row, col+1, date[2]+"/"+date[1]+"/"+date[0])
+                    worksheet.write(row, col + 1, date[2] + "/" + date[1] + "/" + date[0])
                 for course in sorted(self.m_courses[d]):
-                    worksheet.write(row, col + 2, course.getBeginHour()[:-3].replace(":","h") + " - " + course.getEndHour()[:-3].replace(":","h"))
+                    worksheet.write(row, col + 2,
+                                    course.getBeginHour()[:-3].replace(":", "h") + " - " + course.getEndHour()[
+                                                                                           :-3].replace(":", "h"))
                     worksheet.write(row, col + 3, "")
                     worksheet.write(row, col + 4, course.getModule().getName())
                     worksheet.write(row, col + 5, course.getType())
@@ -204,14 +216,14 @@ class TimeTable(object):
                             totalDurationHETD += course.getDuration()
                         else:
                             if course.getType() == "TP":
-                                #worksheet.write_number(row, col + 7, course.getDuration() * 2 / 3)
+                                # worksheet.write_number(row, col + 7, course.getDuration() * 2 / 3)
                                 worksheet.write_number(row, col + 7, course.getDuration())
-                                #totalDurationHETD += course.getDuration() * 2 / 3
+                                # totalDurationHETD += course.getDuration() * 2 / 3
                                 totalDurationHETD += course.getDuration()
-                            #else:
-                                #if course.getType() == "TEA":
-                                    #worksheet.write_number(row, col + 7, course.getDuration() * 0.015 * 15)
-                                    #totalDurationHETD += course.getDuration() * 0.015
+                            # else:
+                            # if course.getType() == "TEA":
+                            # worksheet.write_number(row, col + 7, course.getDuration() * 0.015 * 15)
+                            # totalDurationHETD += course.getDuration() * 0.015
                     row += 1
                     if course.getType() != "TEA":
                         totalDuration += course.getDuration()
@@ -219,13 +231,13 @@ class TimeTable(object):
             if nbCoursesByDay > 1:
                 worksheet.merge_range(row - nbCoursesByDay, col, row - 1, col, lastWeek, merge_format)
             else:
-                worksheet.write_number(row-1, col, lastWeek)
+                worksheet.write_number(row - 1, col, lastWeek)
 
-        worksheet.write(row+1, 6, "Total sans TEA")
-        worksheet.write_number(row+1, 7, totalDuration)
-        worksheet.write_number(row+1, 8, totalDurationHETD)
-        worksheet.write(row+2, 7, "Reste")
-        worksheet.write_number(row+2, 8, self.m_nbHoursPerform-totalDurationHETD)
+        worksheet.write(row + 1, 6, "Total sans TEA")
+        worksheet.write_number(row + 1, 7, totalDuration)
+        worksheet.write_number(row + 1, 8, totalDurationHETD)
+        worksheet.write(row + 2, 7, "Reste")
+        worksheet.write_number(row + 2, 8, self.m_nbHoursPerform - totalDurationHETD)
 
         # Recapitulatif par UE
         row = 1
@@ -234,15 +246,15 @@ class TimeTable(object):
         TP = 0
         TEA = 0
         for module in self.m_modules:
-            worksheet.write(row, 10, module.getName())
+            worksheet.write(row, 10, module.getCode() + " " + module.getName())
             worksheet.write_number(row, 11, module.getCMHour())
             worksheet.write_number(row, 12, module.getTDHour())
             worksheet.write_number(row, 13, module.getTPHour())
             worksheet.write_number(row, 14, module.getTEAHour())
-            #worksheet.write_number(row, 15, module.getCMHour()+module.getTDHour()+module.getTPHour()+module.getTEAHour())
-            #worksheet.write_number(row, 16, module.getCMHour()*1.5+module.getTDHour()+module.getTPHour()*2/3+module.getTEAHour()*0.015*15)
+            # worksheet.write_number(row, 15, module.getCMHour()+module.getTDHour()+module.getTPHour()+module.getTEAHour())
+            # worksheet.write_number(row, 16, module.getCMHour()*1.5+module.getTDHour()+module.getTPHour()*2/3+module.getTEAHour()*0.015*15)
             worksheet.write_number(row, 15, module.getCMHour() + module.getTDHour() + module.getTPHour())
-            #worksheet.write_number(row, 16, module.getCMHour() * 1.5 + module.getTDHour() + module.getTPHour() * 2 / 3)
+            # worksheet.write_number(row, 16, module.getCMHour() * 1.5 + module.getTDHour() + module.getTPHour() * 2 / 3)
             worksheet.write_number(row, 16, module.getCMHour() * 1.5 + module.getTDHour() + module.getTPHour())
             row += 1
             CM += module.getCMHour()
@@ -250,15 +262,15 @@ class TimeTable(object):
             TP += module.getTPHour()
             TEA += module.getTEAHour()
 
-        worksheet.write(row+1, 10, "Total", cell_format)
-        worksheet.write_number(row+1, 11, CM, cell_format)
-        worksheet.write_number(row+1, 12, TD, cell_format)
-        worksheet.write_number(row+1, 13, TP, cell_format)
-        worksheet.write_number(row+1, 14, TEA, cell_format)
-        #worksheet.write_number(row+1, 15, CM+TD+TP+TEA, cell_format)
-        #worksheet.write_number(row+1, 16, CM*1.5+TD+TP*2/3+TEA*0.015*15, cell_format)
+        worksheet.write(row + 1, 10, "Total", cell_format)
+        worksheet.write_number(row + 1, 11, CM, cell_format)
+        worksheet.write_number(row + 1, 12, TD, cell_format)
+        worksheet.write_number(row + 1, 13, TP, cell_format)
+        worksheet.write_number(row + 1, 14, TEA, cell_format)
+        # worksheet.write_number(row+1, 15, CM+TD+TP+TEA, cell_format)
+        # worksheet.write_number(row+1, 16, CM*1.5+TD+TP*2/3+TEA*0.015*15, cell_format)
         worksheet.write_number(row + 1, 15, CM + TD + TP, cell_format)
-        #worksheet.write_number(row + 1, 16, CM * 1.5 + TD + TP * 2 / 3, cell_format)
+        # worksheet.write_number(row + 1, 16, CM * 1.5 + TD + TP * 2 / 3, cell_format)
         worksheet.write_number(row + 1, 16, CM * 1.5 + TD + TP, cell_format)
 
         workbook.close()
