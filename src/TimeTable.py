@@ -4,12 +4,15 @@
 # TimeTable.py
 # 29/09/2018
 #
+import ssl
 
 from ics import Calendar
 from datetime import datetime
-from urllib2 import urlopen
+#from urllib2 import urlopen
+from urllib.request import urlopen
 import xlsxwriter
 import os
+import certifi
 from Module import Module
 from Course import Course
 
@@ -34,7 +37,7 @@ class TimeTable(object):
     """
 
     def createTimeTable(self):
-        gcal = Calendar(urlopen(self.m_ics).read().decode('iso-8859-1'))
+        gcal = Calendar(urlopen(self.m_ics, context=ssl.create_default_context(cafile=certifi.where())).read().decode('iso-8859-1'))
 
         for component in gcal.events:
             description = component.description.replace(u"Ã¨", "e").replace(u"Ã©", "e")
@@ -56,7 +59,7 @@ class TimeTable(object):
 
             if type != "":
                 splitedDescription = description.split()
-                code = splitedDescription[2]
+                code = splitedDescription[3]
 
                 index = description.find(":")
                 temp = description[index + 2:]
@@ -69,7 +72,7 @@ class TimeTable(object):
                 d = datetime(int(date[0]), int(date[1]), int(date[2]))
 
                 if d >= self.m_beginYearDate:
-                    print "---------------------------------"
+                    print("---------------------------------")
                     if parentheseIndex != -1:
                         temp = temp[:parentheseIndex - 1]
 
@@ -81,10 +84,10 @@ class TimeTable(object):
                     if index != -1:
                         temp = temp[:index - 1]
 
-                    print code + " " + temp
-                    print str(component.begin)[:10]
-                    print str(component.begin)[11:19]
-                    print component.duration
+                    print(code + " " + temp)
+                    print(str(component.begin)[:10])
+                    print(str(component.begin)[11:19])
+                    print(component.duration)
 
                     module = None
                     for m in self.m_modules:
@@ -149,19 +152,19 @@ class TimeTable(object):
 
         # Start from the first cell. Rows and columns are zero indexed.
         row = 1
-        col = 1
+        col = 0
 
         cell_format = workbook.add_format()
         cell_format.set_align('center')
 
-        worksheet.write(0, 1, "Semaine", cell_format)
-        worksheet.write(0, 2, "Date", cell_format)
-        worksheet.write(0, 3, u"Créneau", cell_format)
-        worksheet.write(0, 4, "Niveau", cell_format)
-        worksheet.write(0, 5, "UE", cell_format)
-        worksheet.write(0, 6, "Nature", cell_format)
-        worksheet.write(0, 7, "Total", cell_format)
-        worksheet.write(0, 8, "HETD", cell_format)
+        worksheet.write(0, 0, "Semaine", cell_format)
+        worksheet.write(0, 1, "Date", cell_format)
+        worksheet.write(0, 2, u"Créneau", cell_format)
+        #worksheet.write(0, 4, "Niveau", cell_format)
+        worksheet.write(0, 3, "UE", cell_format)
+        worksheet.write(0, 4, "Nature", cell_format)
+        worksheet.write(0, 5, "Total", cell_format)
+        worksheet.write(0, 6, "HETD", cell_format)
         worksheet.write(0, 10, "UE", cell_format)
         worksheet.write(0, 11, "CM", cell_format)
         worksheet.write(0, 12, "TD", cell_format)
@@ -203,21 +206,21 @@ class TimeTable(object):
                     worksheet.write(row, col + 2,
                                     course.getBeginHour()[:-3].replace(":", "h") + " - " + course.getEndHour()[
                                                                                            :-3].replace(":", "h"))
-                    worksheet.write(row, col + 3, "")
-                    worksheet.write(row, col + 4, course.getModule().getName())
-                    worksheet.write(row, col + 5, course.getType())
-                    worksheet.write_number(row, col + 6, course.getDuration())
+                    #worksheet.write(row, col + 3, "")
+                    worksheet.write(row, col + 3, course.getModule().getName())
+                    worksheet.write(row, col + 4, course.getType())
+                    worksheet.write_number(row, col + 5, course.getDuration())
                     if course.getType() == "CM":
-                        worksheet.write_number(row, col + 7, course.getDuration() * 1.5)
+                        worksheet.write_number(row, col + 6, course.getDuration() * 1.5)
                         totalDurationHETD += course.getDuration() * 1.5
                     else:
                         if course.getType() == "TD":
-                            worksheet.write_number(row, col + 7, course.getDuration())
+                            worksheet.write_number(row, col + 6, course.getDuration())
                             totalDurationHETD += course.getDuration()
                         else:
                             if course.getType() == "TP":
                                 # worksheet.write_number(row, col + 7, course.getDuration() * 2 / 3)
-                                worksheet.write_number(row, col + 7, course.getDuration())
+                                worksheet.write_number(row, col + 6, course.getDuration())
                                 # totalDurationHETD += course.getDuration() * 2 / 3
                                 totalDurationHETD += course.getDuration()
                             # else:
@@ -233,11 +236,11 @@ class TimeTable(object):
             else:
                 worksheet.write_number(row - 1, col, lastWeek)
 
-        worksheet.write(row + 1, 6, "Total sans TEA")
-        worksheet.write_number(row + 1, 7, totalDuration)
-        worksheet.write_number(row + 1, 8, totalDurationHETD)
-        worksheet.write(row + 2, 7, "Reste")
-        worksheet.write_number(row + 2, 8, self.m_nbHoursPerform - totalDurationHETD)
+        worksheet.write(row + 1, 4, "Total sans TEA")
+        worksheet.write_number(row + 1, 5, totalDuration)
+        worksheet.write_number(row + 1, 6, totalDurationHETD)
+        worksheet.write(row + 2, 5, "Reste")
+        worksheet.write_number(row + 2, 6, self.m_nbHoursPerform - totalDurationHETD)
 
         # Recapitulatif par UE
         row = 1
