@@ -4,6 +4,7 @@
 # TimeTable.py
 # 29/09/2018
 #
+
 import csv
 import ssl
 
@@ -84,31 +85,30 @@ class TimeTable(object):
                     # Retrouver EC a partir de son code
                     try:
                         name_ec = self.m_maquette[code]
-                    finally:
+                    except:
                         name_ec = None
 
-                    if nameEC == None:
+                    if name_ec == None:
                         index = description.find(":")
-                        nameEC = description[index + 2:]
-                        endIndex = nameEC.find(",")
+                        name_ec = description[index + 2:]
+                        endIndex = name_ec.find(",")
 
-                        nameEC = nameEC[:endIndex].replace(u"Ã¨", "e").replace(u"Ã©", "e").replace(u"Ãª", "e")
-                        parentheseIndex = nameEC.find("(")
+                        name_ec = name_ec[:endIndex].replace(u"Ã¨", "e").replace(u"Ã©", "e").replace(u"Ãª", "e")
+                        parentheseIndex = name_ec.find("(")
 
                         if parentheseIndex != -1:
-                            nameEC = nameEC[:parentheseIndex - 1]
+                            name_ec = name_ec[:parentheseIndex - 1]
 
-                        comaIndex = nameEC.find(",")
+                        comaIndex = name_ec.find(",")
                         if comaIndex != -1:
-                            nameEC = nameEC[:comaIndex - 1]
+                            name_ec = name_ec[:comaIndex - 1]
 
-                        index = nameEC.find("-")
+                        index = name_ec.find("-")
                         if index != -1:
-                            nameEC = nameEC[:index - 1]
+                            name_ec = name_ec[:index - 1]
 
                     print("---------------------------------")
-
-                    print(code + " " + nameEC)
+                    print(code + " " + name_ec)
                     print(str(component.begin)[:10])
                     print(str(component.begin)[11:19])
                     print(component.duration)
@@ -118,7 +118,7 @@ class TimeTable(object):
                         if m.getCode() == code:
                             module = m
                     if module is None:
-                        module = Module(nameEC, code)
+                        module = Module(name_ec, code)
 
                     duration = 1.5
                     if str(component.duration) == "1:00:00":
@@ -142,7 +142,7 @@ class TimeTable(object):
                     except:
                         m = []
 
-                    course = Course(module, type, str(d), str(component.begin)[11:19], str(component.end)[11:19],
+                    course = Course(module, course_type, str(d), str(component.begin)[11:19], str(component.end)[11:19],
                                     duration)
                     module.addCourse(course)
                     m.append(course)
@@ -230,7 +230,9 @@ class TimeTable(object):
                     worksheet.write(row, col + 2,
                                     course.getBeginHour()[:-3].replace(":", "h") + " - " + course.getEndHour()[
                                                                                            :-3].replace(":", "h"))
+
                     # worksheet.write(row, col + 3, "")
+
                     worksheet.write(row, col + 3, course.getModule().getName())
                     worksheet.write(row, col + 4, course.getType())
                     worksheet.write_number(row, col + 5, course.getDuration())
@@ -264,7 +266,7 @@ class TimeTable(object):
         worksheet.write_number(row + 1, 5, totalDuration)
         worksheet.write_number(row + 1, 6, totalDurationHETD)
         worksheet.write(row + 2, 5, "Reste")
-        worksheet.write_number(row + 2, 6, self.m_nbHoursPerform - totalDurationHETD)
+        worksheet.write_number(row + 2, 6, self.m_nb_hours_perform - totalDurationHETD)
 
         # Recapitulatif par UE
         row = 1
