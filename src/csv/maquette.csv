@@ -1,0 +1,137 @@
+ec_code;ec_libelle
+160-2-01;Informatique d'usage
+160-2-02;LV1 Anglais
+160-2-11;Introduction à la programmation objet
+160-2-12;Programmation Web - novice
+160-2-21;Architecture des ordinateurs - novice
+160-2-22;Systèmes d'exploitation - novice
+160-2-31;Algorithmique des tableaux
+160-2-32;Analyse de données - Bases
+160-2-33;Génie Logiciel - Modélisation - bases
+160-2-71;Principe de la démarche scientifique
+160-2-72;Enjeux du numérique responsable
+160-2-73;Projets transversaux appliquées au développement durable
+
+160-3-01;LV1 Anglais
+160-3-02;Accompagnement à la réussite de mon projet 2
+160-3-03;RePer
+160-3-11;Programmation impérative - novice
+160-3-12;Programmation Web - intermédiaire
+160-3-21;Bases de données - novice
+160-3-22;Réseaux - novice
+160-3-31;Analyse de données - Outils
+160-3-32;Structures de données - novice
+160-3-33;Génie logiciel - Modélisation - intermédiaire
+160-3-71;Epistémologie
+160-3-72;Numérique responsable - intermédiaire
+160-3-73;Projets transversaux appliqués au développement durable
+
+160-4-01;LV1 Anglais
+160-4-02;Immersion
+160-4-11;Programmation impérative - avancé
+160-4-12;Programmation Objet - avancé
+160-4-21;Réseaux - intermédiaire
+160-4-22;Systèmes d'exploitation - avancé
+160-4-31;Génie logiciel - Qualité logicielle et Gestion de projet
+160-4-32;Analyse de données - Utilisateur
+160-4-33;Structures de données - intermédiaire
+160-4-71;Etude de cas : Contrôle et modélisation de processus en vue d'un développement plus durable
+160-4-72;Projets transversaux appliqués au développement durable
+160-4-81;Eco-conception Web
+160-4-82;Programmation Web - avancé
+
+160-5-01;LV1 Anglais
+160-5-02;Accompagnement à la réussite de mon projet 3
+160-5-11;Programmation evenementielle
+160-5-12;Fonctions avancées des SGBD
+160-5-21;Architecture des ordinateurs - avancé
+160-5-22;Sécurité - bases
+160-5-31;Structures de données - avancé
+160-5-32;Analyse de données - Développeur
+160-5-03;Immersion
+160-5-04;RePer
+160-5-71;Développement IOT et efficacité énergétique
+160-5-81;Traitement du Signal pour les objets intelligents
+
+160-6-01;LV1 Anglais
+160-6-02-STAG;Stage (6 semaines)
+160-6-11;Programmation fonctionnelle
+160-6-12;Modélisation de bases de données
+160-6-21;Systèmes répartis
+160-6-22;Sécurité
+160-6-31;Compilation
+160-6-32;Algorithmes de graphes et complexité
+160-6-71;Développement sur smartphones
+160-6-81;Vision embarquée et Intelligence Artificielle
+
+260-1-01;Anglais
+260-1-02;Découverte de la recherche
+260-1-03;Projet / mise en situation professionnelle
+260-1-04;Remédiation / personnalisation
+260-1-11;Bases de données avancées
+260-1-21;Ingénierie logicielle
+260-1-31;Information systems
+260-1-71;Programmation concurrente et distribuée
+260-1-72;Architecture de l'information
+260-1-81;Approches expérimentales
+
+261-1-01;Anglais
+261-1-02;Découverte de la recherche
+261-1-03;Projet / mise en situation professionnelle
+261-1-04;Remédiation / personnalisation
+261-1-11;Bases de données avancées
+261-1-21;Ingénierie logicielle
+261-1-31;Information systems
+261-1-71;Programmation concurrente et distribuée
+261-1-72;Architecture de l'information
+
+260-2-01;Anglais
+260-2-02;Etude bibliographique
+260-2-03-STAG;Stage (8 semaines) (INITIAL)
+260-2-04;Missions en entreprise (APPRENTISSAGE)
+260-2-11;Réseaux et stockage sécurisés
+260-2-21;Architectures orientées service
+260-2-41;Acquisition et codage des contenus - fondements
+260-2-42;Traitement des contenus - fondements
+260-2-51;Decision information systems
+260-2-52;Numerical methods
+260-2-53;Structural methods
+260-2-71;Calculs et sécurité décentralisés
+260-2-81;Qualité des contenus et des traitements
+
+261-2-01;Anglais
+261-2-02;Etude bibliographique
+261-2-03;Missions en entreprise (APPRENTISSAGE)
+261-2-11;Réseaux et stockage sécurisés
+261-2-21;Architectures orientées service
+261-2-71;Calculs et sécurité décentralisés
+
+260-3-01;Anglais
+260-3-02;Projet scientifique
+260-3-03;Projet / mise en situation professionnelle
+260-3-11;Mise en oeuvre des systèmes Big Data
+260-3-21;Web sémantique
+260-3-31;Services web et mobilité
+260-3-41;Acquisition et codage des contenus - avancé
+260-3-42;Traitement des contenus - avancé
+260-3-51;Numerical methods
+260-3-52;Structural methods
+260-3-53;Neural networks
+260-3-71;Fouille de processus
+260-3-81;Information retrieval and document understanding
+260-3-82;Project
+
+261-3-01;Anglais
+261-3-02;Projet scientifique
+261-3-03;Projet / mise en situation professionnelle
+261-3-11;Mise en oeuvre des systèmes Big Data
+261-3-21;Web sémantique
+261-3-31;Services web et mobilité
+261-3-71;Fouille de processus
+
+260-4-01-STAG;Stage (20 semaines) (INITIAL)
+260-4-02;Missions en entreprise (APPRENTISSAGE)
+260-4-11;Projet
+
+261-4-01;Missions en entreprise (APPRENTISSAGE)
+261-4-11;Projet

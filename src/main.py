@@ -8,10 +8,12 @@
 from TimeTable import TimeTable
 from datetime import datetime
 
+from src.TypeTeacher import TypeTeacher
+
 
 def main():
-    time_table = TimeTable("dmondo01", datetime(2020, 9, 1), 192)
-    time_table.createTimeTable()
+    time_table = TimeTable("dmondo01", datetime(2022, 9, 1), 186, TypeTeacher.EC)
+    time_table.create_time_table()
     time_table.createExcelTimeTable()
 
 
