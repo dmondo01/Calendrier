@@ -6,7 +6,7 @@ Le TEA n'est pas pris en compte dans le calcul du service car il dépend du nomb
 
 Ordre de décompte : CM, TD, TP
 
-Calcul heures supplémentaires : 2/3 en TP pour les EC au delà de 192h
+Calcul heures supplémentaires : 2/3 en TP pour les EC au delà du nombre d'heures à effectuer.
 
 ## Récupération du code source
 
