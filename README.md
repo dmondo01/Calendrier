@@ -1,6 +1,12 @@
 # Projet "Calendrier"
 
-Outil d'extraction du service annuel à partir du calendrier public de l'Université de La Rochelle.
+Outil d'extraction du service annuel à partir du calendrier public de La Rochelle Université.
+
+Le TEA n'est pas pris en compte dans le calcul du service car il dépend du nombre de groupe de 10 étudiants.
+
+Ordre de décompte : CM, TD, TP
+
+Calcul heures supplémentaires : 2/3 en TP pour les EC au delà de 192h
 
 ## Récupération du code source
 
@@ -10,35 +16,40 @@ git clone https://gitlab.univ-lr.fr/dmondo01/calendrier.git
 
 ### Prérequis
 
-Python 2.7 ou plus
+Python 3.7 ou plus
 
-Module xslxWriter
-####Installation de xslxWriter via PIP
+Module xslxWriter :
 ```
 pip install XlsxWriter
 ```
 
-#### Ou:
+Module ics :
 ```
-pip install --user XlsxWriter
+pip install ics
 ```
 
 ### Utilisation
 
-Dans le fichier main.py, indiquez votre login ULR, la date de début d'année ainsi que le nombre d'heures que vous devez 
-effectuer dans votre service.
-
+Dans le fichier main.py, indiquez votre login ULR, le nombre d'heures que vous devez 
+effectuer dans votre service, votre type (ATER, EC, PRAG, PRCE ou VACATAIRE), la date de début d'année à partir de laquelle le décompte des heures s'effectuera et en option une date de fin
 ```
-timeTable = TimeTable("dmondo01", datetime(2018, 9, 1), 176)
+time_table = TimeTable("LOGIN_ULR", 384, TeacherType.PRAG, datetime(2022, 9, 1))
+time_table = TimeTable("LOGIN_ULR", 192, TeacherType.ATER, datetime(2021, 9, 1), datetime(2022, 8, 31))
 ```
 
-Dans cet exemple:
+Dans le second exemple :
 
-login= "dmondo01"
+login = "LOGIN_ULR"
 
-dateDeDebut = 01/09/2018
+nombre d'heures = 192 hetd
 
-nombre d'heures=176
+type enseignant = ATER
+
+date de début = 01/09/2021
+
+date de fin = 31/08/2022
+
+
 
 
 ## Author

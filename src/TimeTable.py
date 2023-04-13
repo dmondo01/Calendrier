@@ -17,6 +17,7 @@ import certifi
 from Module import Module
 from Course import Course
 from src.CourseType import CourseType
+from src.TeacherType import TeacherType
 
 
 def _get_name_ec(description):
@@ -56,13 +57,15 @@ def _get_course_type(description):
 class TimeTable(object):
     """
     :param login: login ULR pour acceder a l'EDT
-    :param begin_year_date: date de debut pour la prise en compte des heures (ex: 2018-09-01)
     :param nb_hours_perform: Nombre d'heures a effectuer pour un service complet
     :param type_teacher: Type d'enseignant (EC, PRAG, ATER, ...)
+    :param begin_date: date de debut pour la prise en compte des heures (ex: 2018-09-01)
+    :param end_date: date de fin optionnelle pour la prise en compte des heures (ex: 2019-08-31)
     """
 
-    def __init__(self, login, begin_year_date, nb_hours_perform, type_teacher):
-        self.m_begin_year_date = begin_year_date
+    def __init__(self, login, nb_hours_perform, type_teacher, begin_date, end_date=None):
+        self.m_begin_date = begin_date
+        self.m_end_date = end_date
         self.m_ics = "https://apps.univ-lr.fr/cgi-bin/WebObjects/ServeurPlanning.woa/wa/iCalendarOccupations?login=" + login
         self.m_nb_hours_perform = nb_hours_perform
         self.m_type_teacher = type_teacher
@@ -97,15 +100,20 @@ class TimeTable(object):
             date = str(component.begin)[:10].replace(" ", "").split("-")
             d = datetime(int(date[0]), int(date[1]), int(date[2]))
 
-            if d >= self.m_begin_year_date:
-                description = component.description.replace(u"Ã¨", "e").replace(u"Ã©", "e")
+            # Si (date de fin presente  et date fin >= d >= date debut) ou (pas de date de fin et d >= date debut)
+            if (self.m_end_date is not None and self.m_end_date >= d >= self.m_begin_date) or (
+                    self.m_end_date is None and d >= self.m_begin_date):
+                description = component.description.replace(u"Ã¨", "e").replace(u"Ã©", "e").replace(u"Ã", "à")
 
                 course_type = _get_course_type(component.description.lower())
+                splited_description = description.split()
 
-                if course_type != "":
-                    splited_description = description.split()
+                if len(splited_description) >= 4:
                     code = splited_description[3]
+                else:
+                    code = ""
 
+                if course_type != "" and code != "" and not code.__contains__("(") and not code.__contains__("PCM"):
                     # Retrouver EC a partir de son code
                     try:
                         name_ec = self.m_maquette[code]
@@ -150,9 +158,9 @@ class TimeTable(object):
         worksheet.set_column(1, 1, 9.83)
         worksheet.set_column(2, 2, 14.33)
         worksheet.set_column(3, 3, 45.50)
-        worksheet.set_column(4, 4, 11)
-        worksheet.set_column(5, 5, 11)
-        worksheet.set_column(6, 6, 11)
+        worksheet.set_column(4, 4, 12)
+        worksheet.set_column(5, 5, 12)
+        worksheet.set_column(6, 6, 12)
         worksheet.set_column(7, 7, 9.67)
         worksheet.set_column(8, 8, 9.67)
         worksheet.set_column(10, 10, 53.50)
@@ -177,13 +185,13 @@ class TimeTable(object):
         worksheet.write(0, 4, "Nature", cell_format)
         worksheet.write(0, 5, "Total", cell_format)
         worksheet.write(0, 6, "HETD", cell_format)
-        worksheet.write(0, 10, "UE", cell_format)
+        worksheet.write(0, 10, "EC", cell_format)
         worksheet.write(0, 11, "CM", cell_format)
         worksheet.write(0, 12, "TD", cell_format)
         worksheet.write(0, 13, "TP", cell_format)
         worksheet.write(0, 14, "TEA", cell_format)
-        worksheet.write(0, 15, "Total sans TEA", cell_format)
-        worksheet.write(0, 16, "HETD sans TEA", cell_format)
+        worksheet.write(0, 15, "Total (horsTEA)", cell_format)
+        worksheet.write(0, 16, "HETD (hors TEA)", cell_format)
 
         total_duration = 0
         total_duration_hetd = 0
@@ -202,7 +210,7 @@ class TimeTable(object):
                     if nb_courses_by_day > 1:
                         worksheet.merge_range(row - nb_courses_by_day, col, row - 1, col, last_week, merge_format)
                     else:
-                        worksheet.write_number(row-1, col, last_week, merge_format)
+                        worksheet.write_number(row - 1, col, last_week, merge_format)
                     last_week = week
                     nb_courses_by_day = len(self.m_courses[d])
                 else:
@@ -218,9 +226,6 @@ class TimeTable(object):
                     worksheet.write(row, col + 2,
                                     course.get_begin_hour()[:-3].replace(":", "h") + " - " + course.get_end_hour()[
                                                                                              :-3].replace(":", "h"))
-
-                    # worksheet.write(row, col + 3, "")
-
                     worksheet.write(row, col + 3, course.get_module().get_name())
                     worksheet.write(row, col + 4, str(course.get_type())[-3:].replace(".", ""))
                     worksheet.write_number(row, col + 5, course.get_duration())
@@ -233,14 +238,13 @@ class TimeTable(object):
                             total_duration_hetd += course.get_duration()
                         else:
                             if course.get_type() == CourseType.TP:
-                                # worksheet.write_number(row, col + 7, course.getDuration() * 2 / 3)
-                                worksheet.write_number(row, col + 6, course.get_duration())
-                                # total_duration_hetd += course.getDuration() * 2 / 3
-                                total_duration_hetd += course.get_duration()
-                            # else:
-                            # if course.get_type() == CourseType.TEA:
-                            # worksheet.write_number(row, col + 7, course.getDuration() * 0.015 * 15)
-                            # totalDurationHETD += course.getDuration() * 0.015
+                                if self.m_type_teacher == TeacherType.EC or self.m_type_teacher == TeacherType.PRAG or self.m_type_teacher == TeacherType.PRCE:
+                                    worksheet.write_number(row, col + 6, course.get_duration())
+                                    total_duration_hetd += course.get_duration()
+                                else:
+                                    worksheet.write_number(row, col + 6, course.get_duration() * 2 / 3)
+                                    total_duration_hetd += course.get_duration() * 2 / 3
+
                     row += 1
                     if course.get_type() != CourseType.TEA:
                         total_duration += course.get_duration()
@@ -250,11 +254,13 @@ class TimeTable(object):
             else:
                 worksheet.write_number(row - 1, col, last_week, merge_format)
 
-        worksheet.write(row + 1, 4, "Total sans TEA")
+        worksheet.write(row + 1, 4, "Total (hors TEA)")
         worksheet.write_number(row + 1, 5, total_duration)
         worksheet.write_number(row + 1, 6, total_duration_hetd)
-        worksheet.write(row + 2, 5, "Reste")
-        worksheet.write_number(row + 2, 6, self.m_nb_hours_perform - total_duration_hetd)
+
+        if self.m_nb_hours_perform - total_duration_hetd > 0:
+            worksheet.write(row + 3, 5, "Reste")
+            worksheet.write_number(row + 3, 6, self.m_nb_hours_perform - total_duration_hetd)
 
         # Recapitulatif par UE
         row = 1
@@ -268,11 +274,14 @@ class TimeTable(object):
             worksheet.write_number(row, 12, module.get_td_hour())
             worksheet.write_number(row, 13, module.get_tp_hour())
             worksheet.write_number(row, 14, module.get_tea_hour())
-            # worksheet.write_number(row, 15, module.getCMHour()+module.getTDHour()+module.getTPHour()+module.getTEAHour())
-            # worksheet.write_number(row, 16, module.getCMHour()*1.5+module.getTDHour()+module.getTPHour()*2/3+module.getTEAHour()*0.015*15)
             worksheet.write_number(row, 15, module.get_cm_hour() + module.get_td_hour() + module.get_tp_hour())
-            # worksheet.write_number(row, 16, module.getCMHour() * 1.5 + module.getTDHour() + module.getTPHour() * 2 / 3)
-            worksheet.write_number(row, 16, module.get_cm_hour() * 1.5 + module.get_td_hour() + module.get_tp_hour())
+
+            if self.m_type_teacher == TeacherType.EC or self.m_type_teacher == TeacherType.PRAG or self.m_type_teacher == TeacherType.PRCE:
+                worksheet.write_number(row, 16,
+                                       module.get_cm_hour() * 1.5 + module.get_td_hour() + module.get_tp_hour())
+            else:
+                worksheet.write_number(row, 16,
+                                       module.get_cm_hour() * 1.5 + module.get_td_hour() + module.get_tp_hour() * 2 / 3)
             row += 1
             cm += module.get_cm_hour()
             td += module.get_td_hour()
@@ -284,10 +293,38 @@ class TimeTable(object):
         worksheet.write_number(row + 1, 12, td, cell_format)
         worksheet.write_number(row + 1, 13, tp, cell_format)
         worksheet.write_number(row + 1, 14, tea, cell_format)
-        # worksheet.write_number(row+1, 15, CM+TD+TP+TEA, cell_format)
-        # worksheet.write_number(row+1, 16, CM*1.5+TD+TP*2/3+TEA*0.015*15, cell_format)
         worksheet.write_number(row + 1, 15, cm + td + tp, cell_format)
-        # worksheet.write_number(row + 1, 16, CM * 1.5 + TD + TP * 2 / 3, cell_format)
-        worksheet.write_number(row + 1, 16, cm * 1.5 + td + tp, cell_format)
+
+        worksheet.write(row + 2, 10, "Total HETD (hors TEA)", cell_format)
+        worksheet.write_number(row + 2, 11, cm * 1.5, cell_format)
+        worksheet.write_number(row + 2, 12, td, cell_format)
+        if self.m_type_teacher == TeacherType.EC or self.m_type_teacher == TeacherType.PRAG or self.m_type_teacher == TeacherType.PRCE:
+            worksheet.write_number(row + 2, 13, tp, cell_format)
+            worksheet.write_number(row + 2, 16, cm * 1.5 + td + tp, cell_format)
+        else:
+            worksheet.write_number(row + 2, 13, tp * 2 / 3, cell_format)
+            worksheet.write_number(row + 2, 16, cm * 1.5 + td + tp * 2 / 3, cell_format)
+
+        if self.m_type_teacher == TeacherType.EC or self.m_type_teacher == TeacherType.PRAG or self.m_type_teacher == TeacherType.PRCE:
+            worksheet.write_number(row + 1, 16, cm * 1.5 + td + tp, cell_format)
+            # Heures supplementaires
+            if (cm * 1.5 + td + tp) > self.m_nb_hours_perform:
+                worksheet.write(row + 4, 10, u"Heures supplémentaires (hors TEA)", cell_format)
+
+                extra_hour = 0
+                if self.m_type_teacher == TeacherType.EC:
+                    cmtd = (cm * 1.5) + td
+
+                    if cmtd >= self.m_nb_hours_perform:
+                        extra_hour = abs(self.m_nb_hours_perform - cmtd)
+                        extra_hour += tp * 2 / 3
+                    else:
+                        extra_hour = abs((self.m_nb_hours_perform - cmtd - tp) * 2 / 3)
+                elif self.m_type_teacher == TeacherType.PRCE or self.m_type_teacher == TeacherType.PRAG:
+                    extra_hour = abs(self.m_nb_hours_perform - (cm * 1.5) - td - tp)
+
+                worksheet.write_number(row + 4, 11, extra_hour, cell_format)
+        else:
+            worksheet.write_number(row + 1, 16, cm * 1.5 + td + tp * 2 / 3, cell_format)
 
         workbook.close()
