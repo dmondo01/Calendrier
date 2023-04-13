@@ -16,8 +16,8 @@ import os
 import certifi
 from Module import Module
 from Course import Course
-from src.CourseType import CourseType
-from src.TeacherType import TeacherType
+from CourseType import CourseType
+from TeacherType import TeacherType
 
 
 def _get_name_ec(description):

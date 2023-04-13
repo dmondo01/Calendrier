@@ -4,7 +4,7 @@
 # Module.py
 # 26/09/2018
 #
-from src.CourseType import CourseType
+from CourseType import CourseType
 
 
 class Module(object):

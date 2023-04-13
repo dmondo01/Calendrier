@@ -7,7 +7,7 @@
 
 from TimeTable import TimeTable
 from datetime import datetime
-from src.TeacherType import TeacherType
+from TeacherType import TeacherType
 
 
 if __name__ == '__main__':
