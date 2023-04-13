@@ -7,32 +7,31 @@
 
 
 class Course(object):
-    def __init__(self, module, type, date, beginHour, endHour, duration):
-        self.m_beginHour = beginHour
+    def __init__(self, module, type_course, date, begin_hour, end_hour, duration):
+        self.m_begin_hour = begin_hour
         self.m_date = date
         self.m_duration = duration
-        self.m_endHour = endHour
+        self.m_end_hour = end_hour
         self.m_module = module
-        self.m_type = type
+        self.m_type = type_course
 
-    def getBeginHour(self):
-        return self.m_beginHour
+    def get_begin_hour(self):
+        return self.m_begin_hour
 
-    def getDate(self):
+    def get_date(self):
         return self.m_date
 
-    def getDuration(self):
+    def get_duration(self):
         return self.m_duration
 
-    def getEndHour(self):
-        return self.m_endHour
+    def get_end_hour(self):
+        return self.m_end_hour
 
-    def getModule(self):
+    def get_module(self):
         return self.m_module
 
-    def getType(self):
+    def get_type(self):
         return self.m_type
 
     def __lt__(self, other):
-        return self.m_beginHour <= other.getBeginHour()
-
+        return self.m_begin_hour <= other.get_begin_hour()

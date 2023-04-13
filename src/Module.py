@@ -4,6 +4,7 @@
 # Module.py
 # 26/09/2018
 #
+from src.CourseType import CourseType
 
 
 class Module(object):
@@ -11,43 +12,40 @@ class Module(object):
         self.m_name = name
         self.m_code = code
         self.m_courses = []
-        self.m_CMHour = 0
-        self.m_TDHour = 0
-        self.m_TEAHour = 0
-        self.m_TPHour = 0
+        self.m_cm_hour = 0
+        self.m_td_hour = 0
+        self.m_tea_hour = 0
+        self.m_tp_hour = 0
 
-    def addCourse(self, course):
+    def add_course(self, course):
         self.m_courses.append(course)
-        if course.getType() == "CM":
-            self.m_CMHour += course.getDuration()
-        else:
-            if course.getType() == "TD":
-                self.m_TDHour += course.getDuration()
-            else:
-                if course.getType() == "TP":
-                    self.m_TPHour += course.getDuration()
-                else:
-                    if course.getType() == "TEA":
-                        self.m_TEAHour += course.getDuration();
+        match course.get_type():
+            case CourseType.CM:
+                self.m_cm_hour += course.get_duration()
+            case CourseType.TD:
+                self.m_td_hour += course.get_duration()
+            case CourseType.TP:
+                self.m_tp_hour += course.get_duration()
+            case CourseType.TEA:
+                self.m_tea_hour += course.get_duration()
 
-    def getCMHour(self):
-        return self.m_CMHour
+    def get_cm_hour(self):
+        return self.m_cm_hour
 
-    def getCourses(self):
+    def get_courses(self):
         return self.m_courses
 
-    def getName(self):
+    def get_name(self):
         return self.m_name
 
-    def getCode(self):
+    def get_code(self):
         return self.m_code
 
-    def getTDHour(self):
-        return self.m_TDHour
+    def get_td_hour(self):
+        return self.m_td_hour
 
-    def getTEAHour(self):
-        return self.m_TEAHour;
+    def get_tea_hour(self):
+        return self.m_tea_hour
 
-    def getTPHour(self):
-        return self.m_TPHour
-
+    def get_tp_hour(self):
+        return self.m_tp_hour
