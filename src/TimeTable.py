@@ -113,7 +113,7 @@ class TimeTable(object):
                 else:
                     code = ""
 
-                if course_type != "" and code != "" and not code.__contains__("(") and not code.__contains__("PCM"):
+                if course_type != "" and code != "" and not code.__contains__("(") and not code.__contains__("PCM") and not code.__contains__("Examen"):
                     # Retrouver EC a partir de son code
                     try:
                         name_ec = self.m_maquette[code]
@@ -195,6 +195,10 @@ class TimeTable(object):
 
         total_duration = 0
         total_duration_hetd = 0
+        service_complet = False
+        # Comptage ministere
+        total_extra_hour = 0
+
         if self.m_courses.__len__() != 0:
             last_week = int(sorted(self.m_courses.keys())[0].strftime("%V"))
             nb_courses_by_day = 0
@@ -232,18 +236,27 @@ class TimeTable(object):
                     if course.get_type() == CourseType.CM:
                         worksheet.write_number(row, col + 6, course.get_duration() * 1.5)
                         total_duration_hetd += course.get_duration() * 1.5
+                        total_extra_hour += course.get_duration() * 1.5
                     else:
                         if course.get_type() == CourseType.TD:
                             worksheet.write_number(row, col + 6, course.get_duration())
                             total_duration_hetd += course.get_duration()
+                            total_extra_hour += course.get_duration()
                         else:
                             if course.get_type() == CourseType.TP:
                                 if self.m_type_teacher == TeacherType.EC or self.m_type_teacher == TeacherType.PRAG or self.m_type_teacher == TeacherType.PRCE:
                                     worksheet.write_number(row, col + 6, course.get_duration())
                                     total_duration_hetd += course.get_duration()
+                                    total_extra_hour += course.get_duration() * 2 / 3
                                 else:
                                     worksheet.write_number(row, col + 6, course.get_duration() * 2 / 3)
                                     total_duration_hetd += course.get_duration() * 2 / 3
+
+                    if total_duration_hetd >= self.m_nb_hours_perform and not service_complet:
+                        color_format = workbook.add_format({'bold': True, 'bg_color': 'red'})
+                        worksheet.write(row, 7, "Service du atteint (sans prise en compte du TEA)", color_format)
+                        service_complet = True
+                        total_extra_hour = 0
 
                     row += 1
                     if course.get_type() != CourseType.TEA:
@@ -309,7 +322,8 @@ class TimeTable(object):
             worksheet.write_number(row + 1, 16, cm * 1.5 + td + tp, cell_format)
             # Heures supplementaires
             if (cm * 1.5 + td + tp) > self.m_nb_hours_perform:
-                worksheet.write(row + 4, 10, u"Heures supplémentaires (hors TEA)", cell_format)
+                worksheet.write(row + 4, 10, u"Heures supplémentaires (hors TEA) - Comptage Université", cell_format)
+                worksheet.write(row + 5, 10, u"Heures supplémentaires (hors TEA) - Comptage Ministère", cell_format)
 
                 extra_hour = 0
                 if self.m_type_teacher == TeacherType.EC:
@@ -324,6 +338,7 @@ class TimeTable(object):
                     extra_hour = abs(self.m_nb_hours_perform - (cm * 1.5) - td - tp)
 
                 worksheet.write_number(row + 4, 11, extra_hour, cell_format)
+                worksheet.write_number(row + 5, 11, total_extra_hour, cell_format)
         else:
             worksheet.write_number(row + 1, 16, cm * 1.5 + td + tp * 2 / 3, cell_format)
 
