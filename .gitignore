@@ -4,3 +4,4 @@
 service.xlsx
 src/*.pyc
 src/__pycache__/
+sonar-project.properties
