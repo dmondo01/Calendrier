@@ -19,13 +19,19 @@ from Course import Course
 from CourseType import CourseType
 from TeacherType import TeacherType
 
+"""
+Récupération du nom de l'EC si non présent dans la maquette csv
+:param description : Description d'un événement du calendrier
+:return : Le nom de l'EC
+"""
+
 
 def _get_name_ec(description):
     index = description.find(":")
     name_ec = description[index + 2:]
     end_index = name_ec.find(",")
 
-    name_ec = name_ec[:end_index].replace(u"Ã¨", "e").replace(u"Ã©", "e").replace(u"Ãª", "e")
+    name_ec = name_ec[:end_index]
     bracket_index = name_ec.find("(")
 
     if bracket_index != -1:
@@ -40,6 +46,13 @@ def _get_name_ec(description):
         name_ec = name_ec[:index - 1]
 
     return name_ec
+
+
+"""
+Récupération du type du cours (CM, TD, TP ou TEA)
+:param description : Description d'un événement du calendrier
+:return : Le type du cours
+"""
 
 
 def _get_course_type(description):
@@ -113,7 +126,8 @@ class TimeTable(object):
                 else:
                     code = ""
 
-                if course_type != "" and code != "" and not code.__contains__("(") and not code.__contains__("PCM") and not code.__contains__("Examen"):
+                if course_type != "" and code != "" and not code.__contains__("(") and not code.__contains__(
+                        "PCM") and not code.__contains__("Examen"):
                     # Retrouver EC a partir de son code
                     try:
                         name_ec = self.m_maquette[code]
@@ -195,7 +209,7 @@ class TimeTable(object):
 
         total_duration = 0
         total_duration_hetd = 0
-        service_complet = False
+        full_service = False
         # Comptage ministere
         total_extra_hour = 0
 
@@ -252,10 +266,10 @@ class TimeTable(object):
                                     worksheet.write_number(row, col + 6, course.get_duration() * 2 / 3)
                                     total_duration_hetd += course.get_duration() * 2 / 3
 
-                    if total_duration_hetd >= self.m_nb_hours_perform and not service_complet:
+                    if total_duration_hetd >= self.m_nb_hours_perform and not full_service:
                         color_format = workbook.add_format({'bold': True, 'bg_color': 'red'})
                         worksheet.write(row, 7, "Service du atteint (sans prise en compte du TEA)", color_format)
-                        service_complet = True
+                        full_service = True
                         total_extra_hour = 0
 
                     row += 1

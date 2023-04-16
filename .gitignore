@@ -1,0 +1,6 @@
+.DS_Store
+.idea/
+.scannerwork/
+service.xlsx
+src/*.pyc
+src/__pycache__/
