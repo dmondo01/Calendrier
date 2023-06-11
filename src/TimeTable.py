@@ -334,25 +334,33 @@ class TimeTable(object):
 
         if self.m_type_teacher == TeacherType.EC or self.m_type_teacher == TeacherType.PRAG or self.m_type_teacher == TeacherType.PRCE:
             worksheet.write_number(row + 1, 16, cm * 1.5 + td + tp, cell_format)
-            # Heures supplementaires
-            if (cm * 1.5 + td + tp) > self.m_nb_hours_perform:
-                worksheet.write(row + 4, 10, u"Heures supplémentaires (hors TEA) - Comptage Université", cell_format)
-                worksheet.write(row + 5, 10, u"Heures supplémentaires (hors TEA) - Comptage Ministère", cell_format)
+            cmtdtp = (cm * 1.5) + td + tp
 
+            # Heures supplementaires
+            if cmtdtp > self.m_nb_hours_perform:
                 extra_hour = 0
                 if self.m_type_teacher == TeacherType.EC:
-                    cmtd = (cm * 1.5) + td
+                    worksheet.write(row + 8, 10, u"Heures supplémentaires (hors TEA) - Comptage Université",
+                                    cell_format)
+                    worksheet.write(row + 9, 10, u"Heures supplémentaires (hors TEA) - Comptage Ministère", cell_format)
+                    tp_percent = round(tp * 100 / cmtdtp, 1)
+                    tp_hour_hetd = round(tp_percent / 100 * 192, 1)
+                    tp_hour_2_3 = round((tp - tp_hour_hetd) * 2 / 3, 1)
+                    extra_hour = abs(self.m_nb_hours_perform - ((cm * 1.5) + td) - tp_hour_hetd - tp_hour_2_3)
 
-                    if cmtd >= self.m_nb_hours_perform:
-                        extra_hour = abs(self.m_nb_hours_perform - cmtd)
-                        extra_hour += tp * 2 / 3
-                    else:
-                        extra_hour = abs((self.m_nb_hours_perform - cmtd - tp) * 2 / 3)
+                    worksheet.write(row + 4, 10, u"Pourcentage des heures TP", cell_format)
+                    worksheet.write(row + 5, 10, u"Nombre d'heures TP = 1 HETD", cell_format)
+                    worksheet.write(row + 6, 10, u"Nombre d'heures TP = 2/3 HETD", cell_format)
+                    worksheet.write(row + 4, 11, str(tp_percent) + "%", cell_format)
+                    worksheet.write(row + 5, 11, tp_hour_hetd, cell_format)
+                    worksheet.write(row + 6, 11, tp_hour_2_3, cell_format)
+                    worksheet.write_number(row + 9, 11, total_extra_hour, cell_format)
+
                 elif self.m_type_teacher == TeacherType.PRCE or self.m_type_teacher == TeacherType.PRAG:
                     extra_hour = abs(self.m_nb_hours_perform - (cm * 1.5) - td - tp)
+                    worksheet.write(row + 8, 10, u"Heures supplémentaires (hors TEA)", cell_format)
 
-                worksheet.write_number(row + 4, 11, extra_hour, cell_format)
-                worksheet.write_number(row + 5, 11, total_extra_hour, cell_format)
+                worksheet.write_number(row + 8, 11, extra_hour, cell_format)
         else:
             worksheet.write_number(row + 1, 16, cm * 1.5 + td + tp * 2 / 3, cell_format)
 

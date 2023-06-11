@@ -2,11 +2,14 @@
 
 Outil d'extraction du service annuel à partir du calendrier public de La Rochelle Université.
 
-Le TEA n'est pas pris en compte dans le calcul du service car il dépend du nombre de groupe de 10 étudiants.
+Le TEA n'est pas pris en compte dans le calcul du service car il dépend du nombre de groupe de 10 étudiants. Il faut également ajouter ensuite tout ce qui relève du REH et de la FC.
 
-Ordre de décompte : CM, TD, TP
-
-Calcul heures supplémentaires : 2/3 en TP pour les EC au delà du nombre d'heures à effectuer.
+Calcul heures supplémentaires pour les EC : 
+* Si le sous-total (CM*1,5 + TD + TP) est < au service dû de l’enseignant : toutes les heures TP sont comptabilisées pour 1 HeTD
+* Si le sous-total (CM*1,5 + TD + TP) est > au service dû de l’enseignant :
+1. On calcule la part des TP dans ce sous-total, et on reporte cette part pour identifier les heures TP comptabilisées pour 1 HeTD
+2. On soustrait ce volume horaire au volume d’heures TP total pour identifier les
+heures TP comptabilisées pour 2/3 HETD
 
 ## Récupération du code source
 
