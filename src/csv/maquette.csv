@@ -66,8 +66,9 @@ ec_code;ec_libelle
 
 260-1-01;Anglais
 260-1-02;Découverte de la recherche
-260-1-03;Projet / mise en situation professionnelle
+260-1-03;Projet (Initial)
 260-1-04;Remédiation / personnalisation
+260-1-05;Mise en situation professionnelle (Alternants)
 260-1-11;Bases de données avancées
 260-1-21;Ingénierie logicielle
 260-1-31;Information systems
@@ -77,7 +78,7 @@ ec_code;ec_libelle
 
 261-1-01;Anglais
 261-1-02;Découverte de la recherche
-261-1-03;Projet / mise en situation professionnelle
+261-1-03;mise en situation professionnelle
 261-1-04;Remédiation / personnalisation
 261-1-11;Bases de données avancées
 261-1-21;Ingénierie logicielle
