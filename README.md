@@ -14,7 +14,7 @@ heures TP comptabilisées pour 2/3 HETD
 ## Récupération du code source
 
 ```
-git clone https://gitlab.univ-lr.fr/dmondo01/calendrier.git
+git clone https://github.com/dmondo01/Calendrier.git
 ```
 
 ### Prérequis
